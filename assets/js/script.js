@@ -1,6 +1,8 @@
 var taskIdCounter = 0;
 var formEl = window.document.querySelector("#task-form");
 formEl.addEventListener("submit", taskFormHandler);
+var pageContentEl = document.querySelector("#page-content");
+pageContentEl.addEventListener("click", taskButtonHandler);
 
 function taskFormHandler(event){
     // prevent page reload
@@ -69,8 +71,36 @@ function createTaskActions(){
         statusOptionEl = document.createElement("option");
         statusOptionEl.textContent = statusChoices[i];
         statusOptionEl.setAttribute("value", statusChoices[i]);
-        actionContainerEl.appendChild(statusOptionEl);
+        statusSelectEl.appendChild(statusOptionEl);
     }
+    actionContainerEl.appendChild(statusSelectEl);
     return actionContainerEl;
+}
 
+function taskButtonHandler(event){
+    var taskId;
+    if(event.target.matches(".delete-btn")){
+        taskId = event.target.getAttribute("data-task-id");
+        deleteTask(taskId);
+    }
+    else if(event.target.matches(".edit-btn")){
+        taskId = event.target.getAttribute("data-task-id");
+        editTask(taskId);
+    }
+}
+
+function deleteTask(taskId){
+    var taskItem = document.querySelector(".task-item[data-task-id='"+taskId+"']");
+    taskItem.remove();
+}
+
+function editTask(taskId){
+    formEl.setAttribute("data-task-id", taskIdCounter);
+    var taskItem = document.querySelector(".task-item[data-task-id='"+taskId+"']");
+    var taskName = taskItem.querySelector("h3.task-name").textContent;
+    var taskType = taskItem.querySelector("span.task-type").textContent;
+
+    document.querySelector("input[name='task-name']").value = taskName;
+    document.querySelector("select[name='task-type']").value = taskType;
+    document.querySelector("#save-task").textContent = "Save Edit";
 }
